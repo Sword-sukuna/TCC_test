@@ -1,30 +1,33 @@
-const API = "https://seu-projeto.vercel.app/api/alunos";
+const API = "https://tcc-alunos-api.vercel.app/api/alunos";
 
 document.getElementById("alunoForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const aluno = {
-    nome: nome.value,
-    idade: idade.value,
-    email: email.value,
-    curso: curso.value
+    nome: document.getElementById("nome").value,
+    idade: document.getElementById("idade").value,
+    email: document.getElementById("email").value,
+    curso: document.getElementById("curso").value
   };
 
-  await fetch(API, {
+  const res = await fetch(API, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(aluno)
   });
 
-  alert("Aluno cadastrado!");
+  const data = await res.json();
+  alert(data.message);
 });
 
 async function buscarAlunos() {
-  const nomeBusca = document.getElementById("buscar").value;
-  const res = await fetch(`${API}?nome=${nomeBusca}`);
-  const dados = await res.json();
+  const nome = document.getElementById("buscar").value;
+  const res = await fetch(`${API}?nome=${nome}`);
+  const alunos = await res.json();
 
-  document.getElementById("lista").innerHTML = dados
+  document.getElementById("lista").innerHTML = alunos
     .map(a => `<p>${a.nome} - ${a.curso}</p>`)
     .join("");
 }
