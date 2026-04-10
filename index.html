@@ -3,29 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro de Alunos</title>
+  <title>EduBlock Dashboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>Cadastro de Alunos</h1>
+    <h1>🎓 EduBlock</h1>
 
-    <form id="alunoForm">
-      <input type="text" id="nome" placeholder="Nome" required>
-      <input type="number" id="idade" placeholder="Idade">
-      <input type="email" id="email" placeholder="Email">
-      <input type="text" id="curso" placeholder="Curso">
-      <button type="submit">Cadastrar</button>
-    </form>
+    <div class="dashboard">
+      <div class="card">
+        <h2 id="totalAlunos">0</h2>
+        <p>Total de alunos</p>
+      </div>
+      <div class="card">
+        <h2 id="totalBlocos">0</h2>
+        <p>Total de blocos</p>
+      </div>
+    </div>
 
-    <hr>
+    <section>
+      <h2>Cadastrar Aluno</h2>
+      <form id="alunoForm">
+        <input type="text" id="nome" placeholder="Nome" required>
+        <input type="number" id="idade" placeholder="Idade">
+        <input type="email" id="email" placeholder="Email">
+        <input type="text" id="curso" placeholder="Curso">
+        <select id="bloco_id">
+          <option value="">Sem bloco</option>
+        </select>
+        <button type="submit">Cadastrar</button>
+      </form>
+    </section>
 
-    <input type="text" id="buscar" placeholder="Buscar aluno">
-    <button id="btnBuscar">Buscar</button>
+    <section>
+      <h2>Criar Bloco</h2>
+      <form id="blocoForm">
+        <input type="text" id="nome_bloco" placeholder="Nome do bloco" required>
+        <button type="submit">Criar bloco</button>
+      </form>
+    </section>
 
-    <div id="lista"></div>
+    <section>
+      <h2>Alunos por bloco</h2>
+      <div id="listaBlocos"></div>
+    </section>
   </div>
 
-  <script src="./script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
