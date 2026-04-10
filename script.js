@@ -1,7 +1,8 @@
 const API = "https://tcc-alunos-api.vercel.app/api/alunos";
 
-// cadastrar
-document.getElementById("alunoForm").addEventListener("submit", async (e) => {
+const form = document.getElementById("alunoForm");
+
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const aluno = {
@@ -11,33 +12,45 @@ document.getElementById("alunoForm").addEventListener("submit", async (e) => {
     curso: document.getElementById("curso").value
   };
 
-  const res = await fetch(API, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(aluno)
-  });
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(aluno)
+    });
 
-  const data = await res.json();
-  alert(data.message);
+    const data = await res.json();
 
-  buscarAlunos();
+    alert(data.message || "Aluno cadastrado!");
+
+    form.reset();
+    buscarAlunos();
+
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao cadastrar aluno");
+  }
 });
 
-// buscar
 async function buscarAlunos() {
-  const nome = document.getElementById("buscar").value;
-  const res = await fetch(`${API}?nome=${nome}`);
-  const alunos = await res.json();
+  try {
+    const nome = document.getElementById("buscar").value;
+    const res = await fetch(`${API}?nome=${nome}`);
+    const alunos = await res.json();
 
-  document.getElementById("lista").innerHTML = alunos
-    .map(a => `
-      <p>
-        <strong>${a.nome}</strong><br>
-        ${a.curso || "Sem curso"}<br>
-        ${a.email || ""}
-      </p>
-    `)
-    .join("");
+    document.getElementById("lista").innerHTML = alunos
+      .map(a => `
+        <p>
+          <strong>${a.nome}</strong><br>
+          ${a.curso || "Sem curso"}<br>
+          ${a.email || ""}
+        </p>
+      `)
+      .join("");
+
+  } catch (error) {
+    console.error(error);
+  }
 }
