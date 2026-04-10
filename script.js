@@ -1,61 +1,76 @@
-const API = "https://tcc-alunos-api.vercel.app/api/alunos";
+const API_ALUNOS = "https://tcc-alunos-api.vercel.app/api/alunos";
+const API_BLOCOS = "https://tcc-alunos-api.vercel.app/api/blocos";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("alunoForm");
-  const btnBuscar = document.getElementById("btnBuscar");
+  carregarDashboard();
+  carregarBlocos();
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  document.getElementById("alunoForm").addEventListener("submit", cadastrarAluno);
+  document.getElementById("blocoForm").addEventListener("submit", criarBloco);
+});
 
-    const aluno = {
-      nome: document.getElementById("nome").value,
-      idade: document.getElementById("idade").value,
-      email: document.getElementById("email").value,
-      curso: document.getElementById("curso").value
-    };
+async function cadastrarAluno(e) {
+  e.preventDefault();
 
-    try {
-      const res = await fetch(API, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(aluno)
-      });
+  const aluno = {
+    nome: nome.value,
+    idade: idade.value,
+    email: email.value,
+    curso: curso.value,
+    bloco_id: bloco_id.value || null
+  };
 
-      const data = await res.json();
-      alert(data.message || "Aluno cadastrado!");
-
-      form.reset();
-      buscarAlunos();
-    } catch (error) {
-      console.error("Erro ao cadastrar:", error);
-      alert("Erro ao cadastrar");
-    }
+  await fetch(API_ALUNOS, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(aluno)
   });
 
-  btnBuscar.addEventListener("click", buscarAlunos);
+  alert("Aluno cadastrado!");
+  carregarDashboard();
+}
 
-  async function buscarAlunos() {
-    try {
-      const nome = document.getElementById("buscar").value;
-      const res = await fetch(`${API}?nome=${nome}`);
-      const alunos = await res.json();
+async function criarBloco(e) {
+  e.preventDefault();
 
-      document.getElementById("lista").innerHTML = alunos
-        .map(a => `
-          <p>
-            <strong>${a.nome}</strong><br>
-            Curso: ${a.curso || "Sem curso"}<br>
-            Email: ${a.email || "Sem email"}
-          </p>
-        `)
-        .join("");
-    } catch (error) {
-      console.error("Erro ao buscar:", error);
-    }
-  }
+  await fetch(API_BLOCOS, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nome_bloco: nome_bloco.value })
+  });
 
-  // já carrega lista ao abrir
-  buscarAlunos();
-});
+  alert("Bloco criado!");
+  carregarBlocos();
+}
+
+async function carregarDashboard() {
+  const alunos = await fetch(API_ALUNOS).then(r => r.json());
+  const blocos = await fetch(API_BLOCOS).then(r => r.json());
+
+  document.getElementById("totalAlunos").textContent = alunos.length;
+  document.getElementById("totalBlocos").textContent = blocos.length;
+
+  renderBlocos(blocos, alunos);
+}
+
+async function carregarBlocos() {
+  const blocos = await fetch(API_BLOCOS).then(r => r.json());
+
+  bloco_id.innerHTML = '<option value="">Sem bloco</option>' +
+    blocos.map(b => `<option value="${b.id}">${b.nome_bloco}</option>`).join("");
+}
+
+function renderBlocos(blocos, alunos) {
+  const lista = document.getElementById("listaBlocos");
+
+  lista.innerHTML = blocos.map(bloco => {
+    const alunosBloco = alunos.filter(a => a.bloco_id == bloco.id);
+
+    return `
+      <div class="bloco-card">
+        <h3>${bloco.nome_bloco}</h3>
+        ${alunosBloco.map(a => `<p>${a.nome} - ${a.curso || "Sem curso"}</p>`).join("") || "<p>Sem alunos</p>"}
+      </div>
+    `;
+  }).join("");
+}
